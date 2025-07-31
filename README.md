@@ -28,17 +28,17 @@ This repository provides ArangoDB integration capabilities for the AWS Ontology 
 
 ## 🔄 Transformation Patterns
 
-### RPT (Resource Pattern Transformation)
-- **Best for**: Simple queries, getting started
-- **Performance**: Fastest queries, minimal storage
+### RPT (RDF Preserving Transformation)
+- **Best for**: Complex reasoning, research, schema flexibility
+- **Performance**: Full semantic preservation
 
 ### PGT (Property Graph Transformation) 
 - **Best for**: Production applications, balanced needs
-- **Performance**: Good balance of features and speed
+- **Performance**: Fastest queries, minimal storage 
 
 ### LPGT (Labeled Property Graph Transformation)
-- **Best for**: Complex reasoning, research
-- **Performance**: Full semantic preservation
+- **Best for**: Production applications, schema flexibility
+- **Performance**: fast performance, reduced storage
 
 ## 🚀 Usage Examples
 
