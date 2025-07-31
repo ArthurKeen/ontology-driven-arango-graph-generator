@@ -1,0 +1,10 @@
+# Core ontology dependencies
+rdflib>=6.0.0
+owlready2>=0.45
+
+# ArangoDB integration dependencies
+arangordf>=0.1.0
+python-arango>=7.5.0
+
+# AWS Ontology dependency (public repository)
+# Install with: pip install git+https://github.com/ArthurKeen/AWS_Ontology.git
