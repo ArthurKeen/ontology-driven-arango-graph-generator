@@ -6,5 +6,8 @@ owlready2>=0.45
 arangordf>=0.1.0
 python-arango>=7.5.0
 
+# Configuration management
+PyYAML>=6.0
+
 # AWS Ontology dependency (public repository)
 # Install with: pip install git+https://github.com/ArthurKeen/AWS_Ontology.git
