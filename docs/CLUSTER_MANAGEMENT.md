@@ -1,10 +1,10 @@
 # ArangoDB Cluster Management Guide
 
-This guide covers how to configure and manage multiple ArangoDB clusters for the AWS Ontology transformation project.
+This guide covers how to configure and manage multiple ArangoDB clusters for ontology transformation projects.
 
 ## 📋 Overview
 
-The AWS Ontology ArangoDB integration supports multiple cluster configurations through a centralized `.arango` configuration file. This allows you to:
+The Ontology-Driven ArangoDB Graph Generator supports multiple cluster configurations through a centralized `.arango` configuration file. This allows you to:
 
 - **Manage multiple environments** (development, staging, production)
 - **Switch between local Docker and cloud instances** seamlessly
@@ -187,7 +187,7 @@ python tools/transform_ontology.py --cluster production --patterns pgt
    Host: prod.arangodb.cloud:8529
    Username: prod_user
    Password: ********************  # Always masked
-   Database: aws_ontology
+   Database: graph_ontology
    SSL: True
 ```
 

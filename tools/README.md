@@ -1,6 +1,6 @@
 # ArangoDB Transformation Tools
 
-This directory contains tools for transforming the AWS Ontology into ArangoDB using cluster-based credential management.
+This directory contains tools for transforming any ontology (OWL/RDF) into ArangoDB graph models using cluster-based credential management.
 
 ## 🚀 Quick Start
 
@@ -12,16 +12,16 @@ python tools/setup_environment.py --install-deps
 python tools/transform_ontology.py --list-clusters
 
 # Test connection to a cluster
-python tools/transform_ontology.py --cluster project_a_local --test-connection
+python tools/transform_ontology.py --cluster local_dev --test-connection
 
-# Transform the ontology
-python tools/transform_ontology.py --cluster project_a_local --patterns pgt
+# Transform your ontology
+python tools/transform_ontology.py --cluster local_dev --patterns pgt
 ```
 
 ## 🛠️ Main Tools
 
 ### `transform_ontology.py` - Main Transformation Tool
-Converts the AWS Ontology into ArangoDB using cluster-based authentication and three transformation patterns.
+Converts any ontology (OWL/RDF) into ArangoDB graph models using cluster-based authentication and three transformation patterns.
 
 **Cluster Management Commands:**
 ```bash

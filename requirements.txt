@@ -9,5 +9,6 @@ python-arango>=7.5.0
 # Configuration management
 PyYAML>=6.0
 
-# AWS Ontology dependency (public repository)
-# Install with: pip install git+https://github.com/ArthurKeen/AWS_Ontology.git
+# Example ontology dependency (optional)
+# For AWS Ontology example: pip install git+https://github.com/ArthurKeen/AWS_Ontology.git
+# Or provide your own OWL/RDF ontology files

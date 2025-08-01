@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Transform AWS Ontology to ArangoDB Graph Schema using ArangoRDF.
-Supports multiple transformation patterns:
-- RPT (Resource Pattern Transformation)
-- PGT (Property Graph Transformation)
-- LPGT (Labeled Property Graph Transformation)
+Transform any ontology (OWL/RDF) to ArangoDB Graph Models using ArangoRDF.
+Supports multiple graph model transformations:
+- RPT (RDF Preserving Transformation) - Preserves complete RDF semantics
+- PGT (Property Graph Transformation) - Optimized property graph with vertex/edge collections
+- LPGT (Labeled Property Graph Transformation) - Labeled property graph with rich schema
 """
 
 import os
@@ -40,7 +40,7 @@ except ImportError:
     print("   Make sure you're running from the project root directory.")
     sys.exit(1)
 
-class AWSOntologyTransformer:
+class OntologyGraphTransformer:
     def __init__(self, cluster_id: str = None, credential_manager: ArangoCredentialManager = None,
                  host: str = None, port: int = None, username: str = None, 
                  password: str = None, database: str = None):
@@ -77,9 +77,9 @@ class AWSOntologyTransformer:
                 port=port or 8529,
                 username=username or "root",
                 password=password or "",
-                database=database or "aws_ontology"
+                database=database or "graph_ontology"
             )
-            database_name = database or "aws_ontology"
+            database_name = database or "graph_ontology"
         
         # Ensure the database exists
         if not self.arangodb.has_database(database_name):
@@ -196,7 +196,7 @@ def test_cluster_connection(cluster_id: str, credential_manager: ArangoCredentia
         # Test connection if arangordf is available
         if ARANGORDF_AVAILABLE:
             try:
-                transformer = AWSOntologyTransformer(cluster_id, credential_manager)
+                transformer = OntologyGraphTransformer(cluster_id, credential_manager)
                 print("✅ Connection test successful!")
                 return True
             except Exception as e:
@@ -221,12 +221,12 @@ def test_legacy_connection(args):
     
     if ARANGORDF_AVAILABLE:
         try:
-            transformer = AWSOntologyTransformer(
+            transformer = OntologyGraphTransformer(
                 host=args.host or "localhost",
                 port=args.port or 8529,
                 username=args.username or "root", 
                 password=args.password or "",
-                database=args.database or "aws_ontology"
+                database=args.database or "graph_ontology"
             )
             print("✅ Legacy connection test successful!")
             return True
@@ -239,7 +239,7 @@ def test_legacy_connection(args):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Transform AWS Ontology to ArangoDB using different patterns",
+        description="Transform any ontology to ArangoDB graph models using different patterns",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Cluster Management:
@@ -296,8 +296,8 @@ Examples:
     parser.add_argument("--database", help="Database name (deprecated: use --cluster instead)")
     
     # Transformation options
-    parser.add_argument("--owl", default="ontology/aws.owl", help="Path to OWL file")
-    parser.add_argument("--ttl", default="ontology/examples.ttl", help="Path to TTL examples")
+    parser.add_argument("--owl", default="ontology/ontology.owl", help="Path to OWL ontology file")
+    parser.add_argument("--ttl", default="ontology/sample_data.ttl", help="Path to TTL sample data file")
     parser.add_argument(
         "--patterns",
         nargs="+",
@@ -414,7 +414,7 @@ Examples:
         try:
             cluster_config = credential_manager.get_cluster_config(cluster_id)
             print(f"🔗 Connecting to cluster: {cluster_config['name']} ({cluster_id})")
-            transformer = AWSOntologyTransformer(cluster_id, credential_manager)
+            transformer = OntologyGraphTransformer(cluster_id, credential_manager)
         except KeyError as e:
             print(f"❌ Error: {e}")
             print("   Use --list-clusters to see available clusters.")
@@ -425,12 +425,12 @@ Examples:
     else:
         # Legacy transformer creation
         print("⚠️  Warning: Using legacy connection mode.")
-        transformer = AWSOntologyTransformer(
+        transformer = OntologyGraphTransformer(
             host=args.host or "localhost",
             port=args.port or 8529,
             username=args.username or "root",
             password=args.password or "",
-            database=args.database or "aws_ontology"
+            database=args.database or "graph_ontology"
         )
 
     # Load ontology

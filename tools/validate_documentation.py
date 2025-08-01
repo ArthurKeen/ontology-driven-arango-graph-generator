@@ -207,7 +207,7 @@ def check_documentation_links():
 
 def main():
     """Main validation function."""
-    print("🔍 AWS Ontology ArangoDB Integration - Documentation Validation")
+    print("🔍 Ontology-Driven ArangoDB Graph Generator - Documentation Validation")
     print("=" * 70)
     print()
     

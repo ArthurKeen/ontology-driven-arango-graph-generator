@@ -96,7 +96,7 @@ class ArangoCredentialManager:
             'port': parsed_url.port or 8529,
             'username': cluster_config.get('username', 'root'),
             'password': cluster_config.get('password', ''),
-            'database': cluster_config.get('database', 'aws_ontology'),
+            'database': cluster_config.get('database', 'graph_ontology'),
             'use_ssl': parsed_url.scheme == 'https'
         }
     

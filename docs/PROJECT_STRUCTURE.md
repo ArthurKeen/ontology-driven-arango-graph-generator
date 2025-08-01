@@ -1,11 +1,11 @@
-# Project Structure - AWS Ontology ArangoDB Integration
+# Project Structure - Ontology-Driven ArangoDB Graph Generator
 
 Complete overview of the project structure, files, and their purposes.
 
 ## 📁 Repository Structure
 
 ```
-aws-ontology-arango/
+ontology-driven-arango-graph-generator/
 ├── 📄 README.md                    # Main project documentation
 ├── 📄 requirements.txt             # Python dependencies
 ├── 📄 .gitignore                   # Git ignore rules (includes .arango)

@@ -1,6 +1,6 @@
-# Documentation Index - AWS Ontology ArangoDB Integration
+# Documentation Index - Ontology-Driven ArangoDB Graph Generator
 
-Welcome to the comprehensive documentation for the AWS Ontology ArangoDB Integration project. This directory contains detailed guides, references, and examples for using the cluster-based credential management system.
+Welcome to the comprehensive documentation for the Ontology-Driven ArangoDB Graph Generator project. This directory contains detailed guides, references, and examples for transforming ontologies into different graph models using the cluster-based credential management system.
 
 ## 📚 Documentation Overview
 

@@ -1,4 +1,4 @@
-# API Reference - AWS Ontology ArangoDB Integration
+# API Reference - Ontology-Driven ArangoDB Graph Generator
 
 Complete reference for all tools, command-line options, and configuration formats.
 
@@ -6,7 +6,7 @@ Complete reference for all tools, command-line options, and configuration format
 
 ### `transform_ontology.py` - Main Transformation Tool
 
-**Description:** Primary tool for transforming AWS Ontology into ArangoDB using cluster-based authentication.
+**Description:** Primary tool for transforming any ontology (OWL/RDF) into ArangoDB graph models using cluster-based authentication.
 
 #### Cluster Management Commands
 
@@ -28,8 +28,8 @@ python tools/transform_ontology.py [OPTIONS]
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `--patterns <list>` | list | `["pgt"]` | Transformation patterns to apply |
-| `--owl <path>` | string | `"ontology/aws.owl"` | Path to OWL ontology file |
-| `--ttl <path>` | string | `"ontology/examples.ttl"` | Path to TTL examples file |
+| `--owl <path>` | string | `"ontology/ontology.owl"` | Path to OWL ontology file |
+| `--ttl <path>` | string | `"ontology/sample_data.ttl"` | Path to TTL sample data file |
 
 #### Legacy Connection Options (deprecated)
 
@@ -39,7 +39,7 @@ python tools/transform_ontology.py [OPTIONS]
 | `--port` | integer | `8529` | ArangoDB port |
 | `--username` | string | `"root"` | ArangoDB username |
 | `--password` | string | `""` | ArangoDB password |
-| `--database` | string | `"aws_ontology"` | Database name |
+| `--database` | string | `"graph_ontology"` | Database name |
 
 #### Transformation Patterns
 
@@ -335,7 +335,7 @@ Get ArangoDB connection parameters for a cluster.
     'port': 8529,
     'username': 'username',
     'password': 'password',
-    'database': 'aws_ontology',
+    'database': 'graph_ontology',
     'use_ssl': True|False
 }
 ```
@@ -389,22 +389,22 @@ Print formatted summary of all clusters with status.
 
 **Output:** Formatted table showing clusters, types, and status
 
-### `AWSOntologyTransformer` Class
+### `OntologyGraphTransformer` Class
 
 **Module:** `tools.transform_ontology`
 
 ```python
-from tools.transform_ontology import AWSOntologyTransformer
+from tools.transform_ontology import OntologyGraphTransformer
 from tools.arango_credentials import ArangoCredentialManager
 
 # Cluster-based initialization
 manager = ArangoCredentialManager()
-transformer = AWSOntologyTransformer("cluster_id", manager)
+transformer = OntologyGraphTransformer("cluster_id", manager)
 
 # Legacy initialization
-transformer = AWSOntologyTransformer(
+transformer = OntologyGraphTransformer(
     host="localhost", port=8529, username="root", 
-    password="password", database="aws_ontology"
+    password="password", database="graph_ontology"
 )
 ```
 

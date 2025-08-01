@@ -1,4 +1,4 @@
-# ArangoDB Credential Integration - Implementation Summary
+# Ontology-Driven ArangoDB Graph Generator - Implementation Summary
 
 ## ✅ Completed Features
 
