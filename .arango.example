@@ -1,0 +1,22 @@
+# Safe example configuration. Copy this file to .arango and replace
+# placeholder values with credentials for your local environment.
+
+clusters:
+  local_dev:
+    type: "docker"
+    name: "Local Development"
+    container_name: "ontology-arango"
+    endpoint: "http://localhost:8529"
+    username: "root"
+    password: "change-me"
+    database: "graph_ontology"
+
+  cloud_demo:
+    type: "cloud"
+    name: "Cloud Demo"
+    endpoint: "https://example.arangodb.cloud:8529"
+    username: "demo_user"
+    password: "replace-with-your-secret"
+    database: "graph_ontology"
+
+default: "local_dev"

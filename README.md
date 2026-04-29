@@ -1,158 +1,99 @@
 # Ontology-Driven ArangoDB Graph Generator
 
-This repository contains tools and utilities for transforming **any ontology** (OWL/RDF) and sample data into ArangoDB graph databases using multiple graph models (RDF, Property Graph, Labeled Property Graph) for advanced querying and analysis.
+Tools for transforming OWL/RDF ontologies and sample RDF data into ArangoDB graph databases using RDF Preserving Transformation (RPT), Property Graph Transformation (PGT), and Labeled Property Graph Transformation (LPGT) patterns.
 
-## 🚀 Quick Start
+## Features
+
+- Transform any OWL/RDF ontology into ArangoDB-backed graph models.
+- Manage multiple local or cloud ArangoDB clusters with a git-ignored `.arango` file.
+- Start and inspect local Docker-backed ArangoDB instances from the CLI.
+- Validate documentation, environment setup, and portable unit tests in CI.
+
+## Quick Start
 
 ```bash
-# Clone this repository
-git clone <repo-url>
+git clone https://github.com/<owner>/ontology-driven-arango-graph-generator.git
 cd ontology-driven-arango-graph-generator
 
-# Check environment and install dependencies
-python tools/setup_environment.py --install-deps
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev]"
 
-# List available clusters
+docker compose up -d
+cp .arango.example .arango
+
+python tools/setup_environment.py
 python tools/transform_ontology.py --list-clusters
-
-# Test connection to a cluster
 python tools/transform_ontology.py --cluster local_dev --test-connection
-
-# Transform your ontology
-python tools/transform_ontology.py --cluster local_dev --patterns pgt
 ```
 
-## 📋 Overview
-
-This repository provides a comprehensive **ontology-driven graph generation system** for ArangoDB, including:
-
-- **Multiple Graph Models**: Transform ontologies into RDF, Property Graph (PG), or Labeled Property Graph (LPG) models
-- **Universal Ontology Support**: Works with any OWL/RDF ontology and sample data
-- **Production-Ready Tools**: Robust transformation scripts with error handling
-- **Advanced Query Capabilities**: AQL queries optimized for different graph models
-- **Performance Optimization**: Indexing strategies and query optimization for each model
-- **Automation Support**: Batch processing and CI/CD integration
-
-## 🔄 Transformation Patterns
-
-### RPT (RDF Preserving Transformation)
-- **Creates**: RDF graph model preserving complete ontology semantics
-- **Best for**: Semantic reasoning, SPARQL queries, research applications
-- **Performance**: Full semantic preservation with RDFS/OWL inference support
-
-### PGT (Property Graph Transformation) 
-- **Creates**: Property graph with optimized vertex/edge collections
-- **Best for**: High-performance graph traversal, production applications
-- **Performance**: Fastest queries, minimal storage, optimized for AQL
-
-### LPGT (Labeled Property Graph Transformation)
-- **Creates**: Labeled property graph with rich schema information
-- **Best for**: Complex analytics, multi-model queries, data integration
-- **Performance**: Balanced semantics and performance with flexible labeling
-
-## 🔧 Cluster Management
-
-The system uses a `.arango` configuration file to manage multiple ArangoDB instances:
+Run a transformation with your own files:
 
 ```bash
-# List all configured clusters
-python tools/transform_ontology.py --list-clusters
-
-# Test connection to a specific cluster
-python tools/transform_ontology.py --cluster local_dev --test-connection
-
-# Start Docker container for local clusters
-python tools/transform_ontology.py --cluster local_dev --start-container
-
-# Check environment and install dependencies
-python tools/setup_environment.py --install-deps
+python tools/transform_ontology.py --cluster local_dev --patterns pgt \
+  --owl /path/to/ontology.owl \
+  --ttl /path/to/sample_data.ttl
 ```
 
-### Cluster Configuration
+## Cluster Configuration
 
-Create a `.arango` file in the project root:
+Real credentials belong only in your local `.arango` file. Start from the committed example:
+
+```bash
+cp .arango.example .arango
+```
 
 ```yaml
 clusters:
   local_dev:
     type: "docker"
     name: "Local Development"
-    container_name: "arango-dev"
+    container_name: "ontology-arango"
     endpoint: "http://localhost:8529"
     username: "root"
-    password: "password"
-    
-  production:
-    type: "cloud"
-    name: "Production Cloud"
-    endpoint: "https://your-server.arangodb.cloud:8529"
-    username: "admin"
-    password: "your_password"
+    password: "change-me"
+    database: "graph_ontology"
 
 default: "local_dev"
 ```
 
-## 🚀 Usage Examples
+## Transformation Patterns
+
+- `rpt`: RDF Preserving Transformation for retaining RDF semantics.
+- `pgt`: Property Graph Transformation for common traversal and analytics workloads.
+- `lpgt`: Labeled Property Graph Transformation for richer labels and schema flexibility.
+
+## Development
 
 ```bash
-# Transform with PGT pattern using default cluster
-python tools/transform_ontology.py --patterns pgt
-
-# Transform using specific cluster  
-python tools/transform_ontology.py --cluster production --patterns pgt
-
-# Multiple transformation patterns
-python tools/transform_ontology.py --cluster local_dev --patterns pgt lpgt
-
-# Transform with custom ontology files
-python tools/transform_ontology.py --cluster local_dev --patterns pgt \
-    --owl /path/to/your/ontology.owl --ttl /path/to/your/sample_data.ttl
-
-# Legacy mode (still supported)
-python tools/transform_ontology.py \
-    --host my-server \
-    --database my_graph_db \
-    --patterns pgt
+python -m pip install -e ".[dev]"
+ruff format --check .
+ruff check .
+pytest
+python tools/validate_documentation.py
 ```
 
-## 📚 Documentation
+Live ArangoDB transformations require a configured `.arango` file and ontology input files. Unit tests are portable and do not require a running database.
 
-### Complete Documentation Available
+## Documentation
 
-- **[📖 Documentation Index](docs/README.md)** - Complete documentation overview and navigation guide
-- **[🔧 Cluster Management Guide](docs/CLUSTER_MANAGEMENT.md)** - Comprehensive cluster setup and management
-- **[📋 API Reference](docs/API_REFERENCE.md)** - Complete command and programming reference
-- **[📁 Project Structure](docs/PROJECT_STRUCTURE.md)** - Repository organization and architecture
-- **[🛠️ Tools Documentation](tools/README.md)** - Detailed tool usage and examples
+- [Documentation Index](docs/README.md)
+- [Cluster Management Guide](docs/CLUSTER_MANAGEMENT.md)
+- [API Reference](docs/API_REFERENCE.md)
+- [Project Structure](docs/PROJECT_STRUCTURE.md)
+- [Release Checklist](docs/RELEASE_CHECKLIST.md)
+- [Tools Documentation](tools/README.md)
 
-### Quick References
+## Security
 
-```bash
-# Interactive demonstration of all features
-python tools/quick_start.py
+Do not commit `.arango`, `.env`, real cloud endpoints for private infrastructure, or credentials. If a credential has ever been committed, rotate it before publishing or tagging a release.
 
-# Environment setup and validation
-python tools/setup_environment.py --install-deps
+Report vulnerabilities using the guidance in [SECURITY.md](SECURITY.md).
 
-# Help with any tool
-python tools/transform_ontology.py --help
-```
+## Contributing
 
-## 🔒 Security
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, tests, and pull request expectations.
 
-- **Credential files (`.arango`) are automatically git-ignored**
-- **Passwords are masked in all output displays**
-- **Never commit sensitive configuration to the repository**
-- **Use separate credentials for each environment**
+## License
 
-## 📞 Support
-
-For issues and questions:
-1. **Check the documentation**: Start with [📖 Documentation Index](docs/README.md)
-2. **Run diagnostics**: `python tools/setup_environment.py`
-3. **Try the demo**: `python tools/quick_start.py`
-4. **Contact maintainer** for access and advanced support
-
----
-
-**Note**: This repository provides a general-purpose ontology transformation system with enterprise-grade cluster management capabilities for any ontology and graph model requirements.
+This project is licensed under the [MIT License](LICENSE).

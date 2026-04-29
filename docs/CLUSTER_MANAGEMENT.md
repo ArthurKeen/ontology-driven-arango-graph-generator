@@ -1,385 +1,133 @@
 # ArangoDB Cluster Management Guide
 
-This guide covers how to configure and manage multiple ArangoDB clusters for ontology transformation projects.
+The tools use a local `.arango` YAML file to manage one or more ArangoDB targets. This file can contain credentials, so it is ignored by git and must never be committed.
 
-## 📋 Overview
+## Create Local Configuration
 
-The Ontology-Driven ArangoDB Graph Generator supports multiple cluster configurations through a centralized `.arango` configuration file. This allows you to:
+```bash
+cp .arango.example .arango
+```
 
-- **Manage multiple environments** (development, staging, production)
-- **Switch between local Docker and cloud instances** seamlessly
-- **Automatically handle Docker container lifecycle**
-- **Secure credential management** without committing secrets
-
-## 🔧 Configuration File Format
-
-Create a `.arango` file in your project root with the following structure:
+Edit `.arango` for your local environment:
 
 ```yaml
-# ArangoDB Connection Configurations
-# This file contains sensitive credentials - never commit to repository
-
 clusters:
-  # Local Docker cluster
   local_dev:
     type: "docker"
     name: "Local Development"
-    container_name: "arango-dev"
+    container_name: "ontology-arango"
     endpoint: "http://localhost:8529"
     username: "root"
-    password: "development_password"
-    
-  # Cloud production cluster
-  production:
-    type: "cloud"
-    name: "Production Environment"
-    endpoint: "https://your-prod-server.arangodb.cloud:8529"
-    username: "prod_user"
-    password: "secure_production_password"
-    
-  # Cloud staging cluster
-  staging:
-    type: "cloud"
-    name: "Staging Environment"
-    endpoint: "https://your-staging-server.arangodb.cloud:8529"
-    username: "stage_user"
-    password: "staging_password"
+    password: "change-me"
+    database: "graph_ontology"
 
-# Default cluster to use when none specified
+  cloud_demo:
+    type: "cloud"
+    name: "Cloud Demo"
+    endpoint: "https://example.arangodb.cloud:8529"
+    username: "demo_user"
+    password: "replace-with-your-secret"
+    database: "graph_ontology"
+
 default: "local_dev"
 ```
 
-## 🏗️ Cluster Types
+## Cluster Types
 
-### Docker Clusters (`type: "docker"`)
+### Docker Clusters
 
-For local development environments running ArangoDB in Docker containers.
+Docker clusters represent local ArangoDB containers. Required fields:
 
-**Required fields:**
-- `type: "docker"`
-- `name`: Human-readable description
+- `type`: `docker`
+- `name`: display name
 - `container_name`: Docker container name
-- `endpoint`: Usually `http://localhost:8529`
+- `endpoint`: usually `http://localhost:8529`
 - `username`: ArangoDB username
 - `password`: ArangoDB password
+- `database`: target database name
 
-**Features:**
-- ✅ Automatic container status detection
-- ✅ Automatic container startup when needed
-- ✅ Container lifecycle management
-- ✅ Health checks before operations
+### Cloud Clusters
 
-### Cloud Clusters (`type: "cloud"`)
+Cloud clusters represent ArangoDB Cloud or another remote ArangoDB server. Required fields:
 
-For ArangoDB Cloud instances or remote servers.
+- `type`: `cloud`
+- `name`: display name
+- `endpoint`: HTTPS endpoint
+- `username`: ArangoDB username
+- `password`: ArangoDB password
+- `database`: target database name
 
-**Required fields:**
-- `type: "cloud"`
-- `name`: Human-readable description  
-- `endpoint`: Full HTTPS URL to your cloud instance
-- `username`: Cloud instance username
-- `password`: Cloud instance password
-
-**Features:**
-- ✅ SSL/TLS encryption (auto-detected from https:// URLs)
-- ✅ Connection parameter validation
-- ✅ Cloud-specific error handling
-
-## 🛠️ Cluster Operations
-
-### List All Clusters
+## Common Commands
 
 ```bash
-# Show all clusters with status
+# Start local ArangoDB from this repository
+docker compose up -d
+
+# List configured clusters
 python tools/transform_ontology.py --list-clusters
 
-# Alternative using demo tool
-python tools/demo_cluster_management.py --list-clusters
-```
+# Test one cluster
+python tools/transform_ontology.py --cluster local_dev --test-connection
 
-**Example output:**
-```
-🗂️  Available ArangoDB Clusters:
-==================================================
-  📊 local_dev            | Local Development         | docker   🔴 Stopped ⭐ Default
-     http://localhost:8529
-  📊 staging              | Staging Environment       | cloud   
-     https://staging.arangodb.cloud:8529
-  📊 production           | Production Environment    | cloud   
-     https://prod.arangodb.cloud:8529
-```
-
-### Test Connection
-
-```bash
-# Test specific cluster
-python tools/transform_ontology.py --cluster production --test-connection
-
-# Test with detailed output
-python tools/demo_cluster_management.py --cluster staging --test-connection
-```
-
-### Docker Container Management
-
-```bash
-# Start container manually
+# Start the Docker container configured for a cluster
 python tools/transform_ontology.py --cluster local_dev --start-container
 
-# Check container status
+# Inspect connection parameters with password masking
 python tools/demo_cluster_management.py --cluster local_dev --test-connection
 ```
 
-**The system automatically:**
-- ✅ Detects container status (running/stopped/not found)
-- ✅ Starts stopped containers when needed
-- ✅ Shows helpful error messages for missing containers
-- ✅ Waits for containers to be ready after startup
-
-## 🚀 Using Clusters for Transformations
-
-### Default Cluster
+## Transform With a Cluster
 
 ```bash
-# Uses cluster specified in "default" field
-python tools/transform_ontology.py --patterns pgt
+python tools/transform_ontology.py --cluster local_dev --patterns pgt \
+  --owl /path/to/ontology.owl \
+  --ttl /path/to/sample_data.ttl
 ```
 
-### Specific Cluster
+## Security Practices
+
+- Keep `.arango` local and ignored.
+- Use placeholders in examples and documentation.
+- Rotate credentials that were ever committed or shared in logs.
+- Use separate credentials for development, staging, and production.
+- Prefer least-privilege database users for transformations.
+
+## Troubleshooting
+
+### Missing `.arango`
 
 ```bash
-# Use local development cluster
-python tools/transform_ontology.py --cluster local_dev --patterns pgt
-
-# Use production cluster with multiple patterns
-python tools/transform_ontology.py --cluster production --patterns pgt lpgt
+cp .arango.example .arango
+python tools/setup_environment.py
 ```
 
-### Environment-Specific Workflows
+### Docker Container Not Found
 
 ```bash
-# Development workflow
+docker compose up -d
 python tools/transform_ontology.py --cluster local_dev --test-connection
+```
+
+### Cloud Connection Fails
+
+Check the endpoint, username, password, and network access. Use the demo tool to inspect non-secret connection parameters:
+
+```bash
+python tools/demo_cluster_management.py --cluster cloud_demo --test-connection
+```
+
+## Migration From Direct Parameters
+
+Legacy direct parameters still work, but `.arango` is preferred.
+
+Old style:
+
+```bash
+python tools/transform_ontology.py --host localhost --port 8529 --username root --password <password>
+```
+
+Preferred style:
+
+```bash
 python tools/transform_ontology.py --cluster local_dev --patterns pgt
-
-# Staging deployment
-python tools/transform_ontology.py --cluster staging --test-connection
-python tools/transform_ontology.py --cluster staging --patterns pgt lpgt
-
-# Production deployment
-python tools/transform_ontology.py --cluster production --test-connection
-python tools/transform_ontology.py --cluster production --patterns pgt
 ```
-
-## 🔒 Security Best Practices
-
-### Configuration File Security
-
-- ✅ **Never commit `.arango` to git** - it's automatically in `.gitignore`
-- ✅ **Use strong passwords** for all clusters
-- ✅ **Rotate passwords regularly** especially for production
-- ✅ **Limit access** to the `.arango` file on shared systems
-
-### Password Management
-
-```bash
-# Passwords are always masked in output
-🔗 Connection Parameters for 'production':
-   Host: prod.arangodb.cloud:8529
-   Username: prod_user
-   Password: ********************  # Always masked
-   Database: graph_ontology
-   SSL: True
-```
-
-### Environment Separation
-
-- Use different usernames/passwords for each environment
-- Never use production credentials in development
-- Test connections before running transformations
-- Use least-privilege access principles
-
-## 🎯 Configuration Examples
-
-### Simple Local Setup
-
-```yaml
-clusters:
-  local:
-    type: "docker"
-    name: "Local ArangoDB"
-    container_name: "arango"
-    endpoint: "http://localhost:8529"
-    username: "root"
-    password: "password"
-
-default: "local"
-```
-
-### Multi-Environment Setup
-
-```yaml
-clusters:
-  # Development
-  dev:
-    type: "docker"
-    name: "Development"
-    container_name: "arango-dev"
-    endpoint: "http://localhost:8529"
-    username: "root"
-    password: "dev_pass"
-    
-  # Staging
-  staging:
-    type: "cloud"
-    name: "Staging Cloud"
-    endpoint: "https://abc123.arangodb.cloud:8529"
-    username: "stage_user"
-    password: "stage_secure_pass"
-    
-  # Production
-  prod:
-    type: "cloud"
-    name: "Production Cloud"
-    endpoint: "https://xyz789.arangodb.cloud:8529"
-    username: "prod_user"
-    password: "prod_very_secure_pass"
-
-default: "dev"
-```
-
-### Project-Specific Clusters
-
-```yaml
-clusters:
-  # ProjectA project
-  project_a_local:
-    type: "docker"
-    name: "ProjectA Local"
-    container_name: "project_a"
-    endpoint: "http://localhost:8529"
-    username: "root"
-    password: "project_a_pass"
-    
-  project_a_cloud:
-    type: "cloud"
-    name: "ProjectA Production"
-    endpoint: "https://project_a.arangodb.cloud:8529"
-    username: "project_a_user"
-    password: "project_a_cloud_pass"
-    
-  # ProjectB project
-  project_b_local:
-    type: "docker"
-    name: "ProjectB Local"
-    container_name: "project_b"
-    endpoint: "http://localhost:8529"
-    username: "root"
-    password: "project_b_pass"
-
-default: "project_a_local"
-```
-
-## 🆘 Troubleshooting
-
-### Common Issues
-
-**1. Container won't start**
-```bash
-# Check if container exists
-docker ps -a | grep your_container_name
-
-# Check container logs
-docker logs your_container_name
-
-# Recreate container if needed
-docker rm your_container_name
-docker run -d --name your_container_name -p 8529:8529 arangodb/arangodb
-```
-
-**2. Connection timeout to cloud cluster**
-```bash
-# Test network connectivity
-ping your-server.arangodb.cloud
-
-# Verify credentials
-python tools/demo_cluster_management.py --cluster your_cluster --test-connection
-```
-
-**3. Default cluster not found**
-```bash
-# Check cluster names
-python tools/transform_ontology.py --list-clusters
-
-# Update default in .arango file
-default: "correct_cluster_name"
-```
-
-### Debug Mode
-
-For detailed debugging, examine connection parameters:
-
-```bash
-python tools/demo_cluster_management.py --cluster <name> --test-connection
-```
-
-This shows:
-- Host and port details
-- Username (password masked)
-- SSL settings
-- Container status (for Docker clusters)
-
-## 📚 API Reference
-
-### Command Line Options
-
-| Option | Description |
-|--------|-------------|
-| `--list-clusters` | Show all configured clusters |
-| `--cluster <name>` | Specify cluster to use |
-| `--test-connection` | Test connectivity |
-| `--start-container` | Start Docker container |
-| `--config <path>` | Path to config file (default: .arango) |
-
-### Configuration Fields
-
-| Field | Required | Description |
-|-------|----------|-------------|
-| `type` | Yes | "docker" or "cloud" |
-| `name` | Yes | Human-readable name |
-| `endpoint` | Yes | Full URL to ArangoDB |
-| `username` | Yes | Database username |
-| `password` | Yes | Database password |
-| `container_name` | Docker only | Docker container name |
-| `default` | Root level | Default cluster name |
-
-## 🔄 Migration Guide
-
-### From Direct Connection Parameters
-
-**Old way:**
-```bash
-python tools/transform_ontology.py --host localhost --port 8529 --username root --password secret
-```
-
-**New way:**
-1. Add to `.arango`:
-```yaml
-clusters:
-  local:
-    type: "docker"
-    name: "Local"
-    container_name: "arango"
-    endpoint: "http://localhost:8529"
-    username: "root"
-    password: "secret"
-default: "local"
-```
-
-2. Use cluster:
-```bash
-python tools/transform_ontology.py --cluster local
-```
-
-**Note:** Legacy parameters still work but are deprecated.
-
-For more examples, run: `python tools/quick_start.py`

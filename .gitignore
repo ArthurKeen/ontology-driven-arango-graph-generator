@@ -88,6 +88,8 @@ celerybeat-schedule
 
 # Environments
 .env
+.env.*
+!.env.example
 .venv
 env/
 venv/
@@ -122,3 +124,8 @@ dmypy.json
 
 # ArangoDB credentials file - contains sensitive information
 .arango
+!.arango.example
+
+# Local tooling
+.ruff_cache/
+.uv-cache/

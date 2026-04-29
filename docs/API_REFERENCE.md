@@ -94,7 +94,7 @@ python tools/setup_environment.py [OPTIONS]
 - ✅ Docker availability and daemon status
 - ✅ Configuration file existence (.arango)
 - ✅ Core dependencies (PyYAML, rdflib, python-arango)
-- ✅ Optional dependencies (arangordf, owlready2)
+- ✅ Optional dependencies (arango-rdf, owlready2)
 
 #### Examples
 
@@ -256,14 +256,14 @@ clusters:
   staging:
     type: "cloud"
     name: "Staging Environment"
-    endpoint: "https://staging.arangodb.cloud:8529"
+    endpoint: "https://staging.example.arangodb.cloud:8529"
     username: "stage_user"
     password: "staging_secure_password"
     
   production:
     type: "cloud"
     name: "Production Environment"
-    endpoint: "https://prod.arangodb.cloud:8529"
+    endpoint: "https://prod.example.arangodb.cloud:8529"
     username: "prod_user"
     password: "production_very_secure_password"
 
@@ -452,7 +452,7 @@ Apply Labeled Property Graph Transformation.
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| arangordf | >= 0.1.0 | RDF to ArangoDB transformation |
+| arango-rdf | >= 1.0.0 | RDF to ArangoDB transformation |
 | owlready2 | >= 0.45 | OWL ontology support |
 
 ### Installation
@@ -463,7 +463,7 @@ pip install -r requirements.txt
 
 # Or install specific packages
 pip install PyYAML>=6.0 rdflib>=6.0.0 python-arango>=7.5.0
-pip install arangordf>=0.1.0 owlready2>=0.45
+pip install arango-rdf>=1.0.0 owlready2>=0.45
 ```
 
 ## 🔍 Error Codes and Messages
@@ -474,7 +474,7 @@ pip install arangordf>=0.1.0 owlready2>=0.45
 |-------|-------|----------|
 | `Configuration file .arango not found` | Missing config file | Create .arango file in project root |
 | `Cluster 'name' not found` | Invalid cluster name | Check `--list-clusters` for valid names |
-| `arangordf library is required` | Missing transformation engine | Run `--setup-deps` or install manually |
+| `arango-rdf library is required` | Missing transformation engine | Run `--setup-deps` or install manually |
 | `Docker container 'name' not found` | Container doesn't exist | Create Docker container with specified name |
 | `Failed to start container 'name'` | Docker daemon issue | Check Docker is running and container exists |
 

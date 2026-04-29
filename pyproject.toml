@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ontology-driven-arango-graph-generator"
+version = "0.1.0"
+description = "Transform OWL/RDF ontologies into ArangoDB graph models."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Arthur Keen" }
+]
+keywords = ["arangodb", "ontology", "rdf", "owl", "graph"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Database",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+  "rdflib>=6.0.0",
+  "owlready2>=0.45",
+  "arango-rdf>=1.0.0",
+  "python-arango>=7.5.0",
+  "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "ruff>=0.4",
+]
+
+[project.scripts]
+ontology-transform = "tools.transform_ontology:main"
+ontology-clusters = "tools.demo_cluster_management:main"
+ontology-env = "tools.setup_environment:main"
+
+[tool.setuptools.packages.find]
+include = ["tools*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+target-version = "py38"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501", "UP036"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

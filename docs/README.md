@@ -63,6 +63,11 @@ Topics covered:
 - Learning the system architecture
 - Planning integrations or extensions
 
+#### [Release Checklist](RELEASE_CHECKLIST.md)
+**Pre-publication and release validation checklist**
+
+Use this before making the repository public or tagging a release.
+
 ### 📋 Tools Documentation
 
 #### [Tools README](../tools/README.md)
