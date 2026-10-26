@@ -1,68 +1,58 @@
 # Project Structure
 
-This repository is intentionally small. The core code lives in `tools/`, with documentation, tests, CI, and packaging metadata at the repository root.
+This repository is intentionally small. The code lives in the `ontology_graph_generator` package. Documentation, tests, examples, CI, and packaging metadata sit at the repository root.
 
 ## Repository Layout
 
 ```text
 ontology-driven-arango-graph-generator/
-├── .arango.example              # Safe sample cluster configuration
-├── .github/workflows/ci.yml     # Public CI checks
-├── CONTRIBUTING.md              # Contributor setup and PR guidance
-├── INTEGRATION_SUMMARY.md       # Summary of cluster integration
-├── LICENSE                      # MIT license
-├── README.md                    # Project overview and quick start
-├── SECURITY.md                  # Vulnerability reporting guidance
-├── docker-compose.yml           # Local ArangoDB development service
-├── pyproject.toml               # Packaging, dependencies, lint, and test config
-├── requirements.txt             # Simple pip requirements mirror
-├── docs/                        # User and maintainer documentation
-├── tests/                       # Portable pytest suite
-└── tools/                       # CLI scripts and helper modules
+├── .arango.example                  # Safe sample cluster configuration
+├── .github/workflows/ci.yml         # Lint, tests, live ArangoDB tests, secret scan
+├── CHANGELOG.md                     # Release notes
+├── CONTRIBUTING.md                  # Contributor setup and PR guidance
+├── LICENSE                          # MIT license
+├── README.md                        # Project overview and quick start
+├── SECURITY.md                      # Vulnerability reporting guidance
+├── docker-compose.yml               # Local ArangoDB development service
+├── pyproject.toml                   # Packaging, dependencies, lint, and test config
+├── docs/                            # User and maintainer documentation
+├── examples/                        # Small ontology and sample data for the quick start
+├── ontology_graph_generator/
+│   ├── arango_credentials.py        # .arango loader, Docker helpers, secret masking
+│   ├── transformer.py               # Ontology loading and arango-rdf transformations
+│   ├── cli.py                       # `ontology-transform` command
+│   └── environment.py               # `ontology-env` command
+└── tests/                           # Unit, documentation, and integration tests
 ```
-
-## Core Tooling
-
-- `tools/transform_ontology.py`: main CLI for cluster selection, connection testing, and RPT/PGT/LPGT transformations.
-- `tools/arango_credentials.py`: `.arango` YAML loader and cluster helper.
-- `tools/setup_environment.py`: environment and dependency validation.
-- `tools/demo_cluster_management.py`: standalone cluster management demo.
-- `tools/quick_start.py`: guided workflow demonstration.
-- `tools/validate_documentation.py`: repository documentation sanity checks.
 
 ## Data Flow
 
 ```mermaid
 flowchart TD
-    userCommand["User command"] --> configLoad["Load .arango config"]
-    configLoad --> clusterSelect["Select cluster"]
-    clusterSelect --> dockerCheck["Check Docker status"]
-    dockerCheck --> connectionParams["Build connection parameters"]
-    connectionParams --> ontologyLoad["Load OWL and TTL files"]
-    ontologyLoad --> transformRun["Run RPT, PGT, or LPGT"]
-    transformRun --> arangoDb["Write graph data to ArangoDB"]
+    userCommand["ontology-transform"] --> loadFiles["Load and parse ontology + data"]
+    loadFiles --> target{"--endpoint?"}
+    target -- no --> configLoad["Load .arango, select cluster"]
+    configLoad --> dockerCheck["Start Docker container if needed"]
+    dockerCheck --> connect["Connect, create database if missing"]
+    target -- yes --> connect
+    connect --> transformRun["Run RPT / PGT / LPGT via arango-rdf"]
+    transformRun --> arangoDb["Named graphs in ArangoDB"]
 ```
 
 ## Security Model
 
-- `.arango` is ignored by git and is the only intended place for real ArangoDB credentials.
-- `.arango.example` contains only placeholders and local-development defaults.
-- CLI output masks passwords when connection details are displayed.
-- Public documentation must use fictional hosts such as `example.arangodb.cloud`.
+- `.arango` is ignored by git and is the only intended place for stored credentials. `password_env` lets a cluster read its password from the environment instead.
+- Passwords are never accepted as command-line flags.
+- Connection output masks passwords with a fixed-width mask.
+- CI scans the full git history with gitleaks.
 
 ## Test Strategy
 
-- Unit tests in `tests/` verify configuration loading, password masking behavior, CLI help, and documentation validation.
-- Live ArangoDB transformations are manual or opt-in because they require credentials and ontology input files.
-- CI runs portable checks that do not depend on a private database.
-
-```bash
-pytest
-python tools/validate_documentation.py
-```
+- `tests/test_arango_credentials.py`, `tests/test_transformer.py`, `tests/test_cli.py`: unit tests with no database or Docker required.
+- `tests/test_docs.py`: relative links resolve and documented CLI flags exist.
+- `tests/test_integration.py`: runs all patterns against a live ArangoDB. It is skipped unless `ARANGO_TEST_ENDPOINT` is set; CI runs it against an ArangoDB service container.
 
 ## Extension Points
 
-- Add new credential providers behind `ArangoCredentialManager` only when they can preserve local secret isolation.
-- Add new transformation patterns in `OntologyGraphTransformer` with explicit CLI choices and tests.
-- Keep documentation examples generic and safe for public repositories.
+- New patterns: add an entry to `PATTERNS` in `transformer.py`. The CLI choices, tests, and docs follow from it.
+- New credential sources: extend `ArangoCredentialManager.get_password` without writing secrets to disk or output.

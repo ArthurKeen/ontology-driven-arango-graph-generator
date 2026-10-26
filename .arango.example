@@ -1,5 +1,6 @@
 # Safe example configuration. Copy this file to .arango and replace
 # placeholder values with credentials for your local environment.
+# .arango is git-ignored; never commit real credentials.
 
 clusters:
   local_dev:
@@ -16,7 +17,8 @@ clusters:
     name: "Cloud Demo"
     endpoint: "https://example.arangodb.cloud:8529"
     username: "demo_user"
-    password: "replace-with-your-secret"
+    # Read the password from an environment variable instead of this file
+    password_env: "ARANGO_CLOUD_DEMO_PASSWORD"
     database: "graph_ontology"
 
 default: "local_dev"

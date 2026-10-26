@@ -1,0 +1,13 @@
+@prefix org: <http://example.org/org#> .
+@prefix ex: <http://example.org/data/> .
+
+ex:acme a org:Organization ;
+    org:name "Acme Corp" .
+
+ex:alice a org:Employee ;
+    org:name "Alice" ;
+    org:worksFor ex:acme ;
+    org:knows ex:bob .
+
+ex:bob a org:Person ;
+    org:name "Bob" .

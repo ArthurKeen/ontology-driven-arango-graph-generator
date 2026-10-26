@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-Please report security issues privately before opening a public issue. If this repository is hosted on GitHub, use GitHub's private vulnerability reporting feature when available. Otherwise, contact the maintainer through the repository owner's preferred private channel.
+Please report security issues privately rather than in a public issue. Use GitHub's private vulnerability reporting on this repository: **Security** tab → **Report a vulnerability**.
 
 Include:
 
@@ -13,10 +13,8 @@ Include:
 
 ## Credential Handling
 
-This project expects real ArangoDB credentials to live only in a local `.arango` file. That file is ignored by git. The committed `.arango.example` file must contain placeholders only.
-
-Before publishing a release:
-
-- Search for committed credentials, tokens, private endpoints, and local absolute paths.
-- Rotate any credential that was ever committed, even if it has since been removed.
-- Confirm command output masks passwords.
+- Real ArangoDB credentials live only in a local, git-ignored `.arango` file, or in environment variables referenced by `password_env` or `ARANGO_PASSWORD`.
+- The committed `.arango.example` contains placeholders only.
+- Passwords are never accepted as command-line flags, and connection output masks them.
+- CI scans the full git history for secrets with gitleaks.
+- Rotate any credential that was ever committed, even if it has since been removed from history.

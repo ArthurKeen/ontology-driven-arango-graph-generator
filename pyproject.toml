@@ -1,14 +1,15 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "ontology-driven-arango-graph-generator"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Transform OWL/RDF ontologies into ArangoDB graph models."
 readme = "README.md"
-requires-python = ">=3.8"
-license = { file = "LICENSE" }
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
   { name = "Arthur Keen" }
 ]
@@ -16,49 +17,55 @@ keywords = ["arangodb", "ontology", "rdf", "owl", "graph"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: Database",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
   "rdflib>=6.0.0",
-  "owlready2>=0.45",
-  "arango-rdf>=1.0.0",
-  "python-arango>=7.5.0",
+  "arango-rdf>=2.0.0",
+  "python-arango>=8.0.0",
   "PyYAML>=6.0",
 ]
 
 [project.optional-dependencies]
 dev = [
   "pytest>=8.0",
-  "ruff>=0.4",
+  # Pinned so formatter upgrades cannot break CI unexpectedly
+  "ruff==0.17.2",
 ]
 
+[project.urls]
+Homepage = "https://github.com/arango-solutions-org/ontology-driven-arango-graph-generator"
+Issues = "https://github.com/arango-solutions-org/ontology-driven-arango-graph-generator/issues"
+
 [project.scripts]
-ontology-transform = "tools.transform_ontology:main"
-ontology-clusters = "tools.demo_cluster_management:main"
-ontology-env = "tools.setup_environment:main"
+ontology-transform = "ontology_graph_generator.cli:main"
+ontology-env = "ontology_graph_generator.environment:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "ontology_graph_generator.__version__" }
 
 [tool.setuptools.packages.find]
-include = ["tools*"]
+include = ["ontology_graph_generator*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["."]
+markers = [
+  "integration: needs a live ArangoDB (set ARANGO_TEST_ENDPOINT and ARANGO_TEST_PASSWORD)",
+]
 
 [tool.ruff]
-target-version = "py38"
+target-version = "py310"
 line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
-ignore = ["E501", "UP036"]
+ignore = ["E501"]
 
 [tool.ruff.format]
 quote-style = "double"
